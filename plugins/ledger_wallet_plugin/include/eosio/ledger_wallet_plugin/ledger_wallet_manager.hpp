@@ -111,7 +111,8 @@ public:
 
 private:
 
-    hid& open_device();
+    hid *open_device();
+    void close_device(hid *device);
 };
 
 }
