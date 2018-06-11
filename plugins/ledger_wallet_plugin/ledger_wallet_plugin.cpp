@@ -3,15 +3,13 @@
  *  @copyright defined in eos/LICENSE.txt
  */
 #include <eosio/ledger_wallet_plugin/ledger_wallet_plugin.hpp>
+#include <eosio/ledger_wallet_plugin/ledger_wallet_manager.hpp>
 
 namespace eosio {
    static appbase::abstract_plugin& _ledger_wallet_plugin = app().register_plugin<ledger_wallet_plugin>();
 
-class ledger_wallet_plugin_impl {
-   public:
-};
 
-ledger_wallet_plugin::ledger_wallet_plugin():my(new ledger_wallet_plugin_impl()){}
+ledger_wallet_plugin::ledger_wallet_plugin():my(new ledger_wallet_manager()){}
 ledger_wallet_plugin::~ledger_wallet_plugin(){}
 
 void ledger_wallet_plugin::set_program_options(options_description&, options_description& cfg) {

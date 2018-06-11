@@ -30,7 +30,7 @@ namespace eosio {
         void plugin_shutdown();
 
     private:
-        std::unique_ptr<class ledger_wallet_plugin_impl> my;
+        std::unique_ptr<class ledger_wallet_manager> my;
     };
 
 }

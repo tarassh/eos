@@ -2,7 +2,7 @@
 // Created by Taras Shchybovyk on 6/11/18.
 //
 
-#include <eosio/ledger_wallet_plugin/hid.h>
+#include <eosio/ledger_wallet_plugin/hid.hpp>
 #include <eosio/chain/exceptions.hpp>
 
 namespace eosio {

@@ -1,6 +1,7 @@
 file(GLOB HEADERS "include/eosio/ledger_wallet_plugin/*.hpp")
 add_library( ledger_wallet_plugin
              hid.cpp
+             ledger_wallet_manager.cpp
              ledger_wallet_plugin.cpp
              ${HEADERS} )
 
