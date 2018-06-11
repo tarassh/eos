@@ -5,6 +5,7 @@
 #pragma once
 #include <eosio/chain/types.hpp>
 #include <eosio/chain/transaction.hpp>
+#include <eosio/ledger_wallet_plugin/hid.hpp>
 
 using namespace eosio::chain;
 
@@ -74,7 +75,7 @@ public:
     map<public_key_type,private_key_type> list_keys(const string& name, const string& pw) { return map<public_key_type, private_key_type>(); };
 
     /// @return A set of public keys from all unlocked wallets, use with chain_controller::get_required_keys.
-    flat_set<public_key_type> get_public_keys() { return flat_set<public_key_type>(); }
+    flat_set<public_key_type> get_public_keys();
 
     /// Locks all the unlocked wallets.
     void lock_all() {}
@@ -107,6 +108,10 @@ public:
     /// @throws fc::exception if wallet not found or locked, or if the wallet cannot create said type of key
     /// @return The public key of the created key
     string create_key(const std::string& name, const std::string& key_type) { return ""; }
+
+private:
+
+    hid& open_device();
 };
 
 }

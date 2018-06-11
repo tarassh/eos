@@ -42,6 +42,7 @@ public:
     device_info get_device_info();
 
     static vector<device_info> devices(unsigned short vendor_id, unsigned short product_id);
+    static void initialize();
     static void deinitialize();
 
 private:

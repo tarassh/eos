@@ -5,6 +5,7 @@ add_library( ledger_wallet_plugin
              ledger_wallet_plugin.cpp
              ${HEADERS} )
 
-target_link_libraries( ledger_wallet_plugin appbase eosio_chain )
+link_directories("/usr/local/lib")
+target_link_libraries( ledger_wallet_plugin appbase eosio_chain hidapi )
 target_include_directories( ledger_wallet_plugin PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 target_include_directories( ledger_wallet_plugin PUBLIC "/usr/local/include/hidapi")

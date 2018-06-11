@@ -146,6 +146,12 @@ vector<hid::device_info> hid::devices(unsigned short vendor_id, unsigned short p
     return infos;
 }
 
+void hid::initialize() {
+    if (hid_init()) {
+        // throw error
+    }
+}
+
 void hid::deinitialize() {
     if (hid_exit()) {
         // throw error

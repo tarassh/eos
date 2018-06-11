@@ -41,7 +41,7 @@ int main(int argc, char** argv)
       bfs::path home = determine_home_directory();
       app().set_default_data_dir(home / "eosio-wallet");
       app().set_default_config_dir(home / "eosio-wallet");
-      app().register_plugin<wallet_api_plugin>();
+//      app().register_plugin<wallet_api_plugin>();
       app().register_plugin<ledger_wallet_api_plugin>();
       if(!app().initialize<wallet_plugin, wallet_api_plugin, ledger_wallet_plugin, ledger_wallet_api_plugin, http_plugin>(argc, argv))
          return -1;
