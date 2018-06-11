@@ -9,18 +9,20 @@ namespace eosio {
 
 #define READ_BUFF_MAXSIZE 2048
 
-hid::hid(unsigned short vendor_id, unsigned short product_id, wchar_t *serial_number) {
+hid::hid(unsigned short vendor_id, unsigned short product_id, wchar_t *serial_number)
+        : _vendor_id(vendor_id), _product_id(product_id) {
     _hid_handle = hid_open(vendor_id, product_id, serial_number);
 
     if (_hid_handle == nullptr) {
-        EOS_THROW(chain::wallet_nonexistent_exception, "Device not found: ${v} ${p}", ("v", vendor_id)("p", product_id));
+        // EOS_THROW(chain::wallet_nonexistent_exception, "Device not found: ${v} ${p}", ("v", vendor_id)("p", product_id));
     }
 }
 
-hid::hid(const char *path) {
+hid::hid(const char *path)
+        : _vendor_id(0), _product_id(0) {
     _hid_handle = hid_open_path(path);
     if (_hid_handle == nullptr) {
-        EOS_THROW(chain::wallet_nonexistent_exception, "Device not found: ${p}", ("p", path));
+        //EOS_THROW(chain::wallet_nonexistent_exception, "Device not found: ${p}", ("p", path));
     }
 }
 
@@ -101,6 +103,53 @@ int hid::send_feature_report(const eosio::hid::databuf_t &message) {
     }
 
     return returned_length;
+}
+
+hid::device_info hid::get_device_info() {
+    const size_t max_len = 255;
+    wchar_t wstr[max_len];
+    device_info info;
+
+    info.vendor_id = _vendor_id;
+    info.product_id = _product_id;
+    hid_get_manufacturer_string(_hid_handle, wstr, max_len);
+    info.manufacturer = wstr;
+
+    hid_get_product_string(_hid_handle, wstr, max_len);
+    info.product = wstr;
+
+    hid_get_serial_number_string(_hid_handle, wstr, max_len);
+    info.serial_number = wstr;
+
+    return info;
+}
+
+vector<hid::device_info> hid::devices(unsigned short vendor_id, unsigned short product_id) {
+    hid_device_info *devs = hid_enumerate(vendor_id, product_id);
+    vector<device_info> infos;
+
+    hid_device_info *cur_dev = devs;
+    while (cur_dev) {
+        device_info info;
+
+        info.vendor_id = cur_dev->vendor_id;
+        info.product_id = cur_dev->product_id;
+        info.manufacturer = cur_dev->manufacturer_string;
+        info.product = cur_dev->product_string;
+        info.serial_number = cur_dev->serial_number;
+        infos.push_back(info);
+
+        cur_dev = cur_dev->next;
+    }
+
+    hid_free_enumeration(devs);
+    return infos;
+}
+
+void hid::deinitialize() {
+    if (hid_exit()) {
+        // throw error
+    }
 }
 
 }

@@ -7,6 +7,7 @@
 #include <eosio/chain/types.hpp>
 
 #include <vector>
+#include <string>
 #include <hidapi.h>
 
 using namespace std;
@@ -30,8 +31,23 @@ public:
     databuf_t get_feature_report(unsigned char report_id);
     int send_feature_report(const databuf_t &message);
 
+    struct device_info {
+        unsigned short vendor_id;
+        unsigned short product_id;
+        wstring manufacturer;
+        wstring product;
+        wstring serial_number;
+    };
+
+    device_info get_device_info();
+
+    static vector<device_info> devices(unsigned short vendor_id, unsigned short product_id);
+    static void deinitialize();
+
 private:
     hid_device *_hid_handle;
+    unsigned short _vendor_id;
+    unsigned short _product_id;
 };
 
 }
