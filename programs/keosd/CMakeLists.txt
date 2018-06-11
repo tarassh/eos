@@ -12,6 +12,7 @@ endif()
 target_link_libraries( keosd
         PRIVATE appbase
         PRIVATE wallet_api_plugin wallet_plugin
+        PRIVATE ledger_wallet_api_plugin ledger_wallet_plugin
         PRIVATE http_plugin
         PRIVATE eosio_chain fc ${CMAKE_DL_LIBS} ${PLATFORM_SPECIFIC_LIBS} )
 
