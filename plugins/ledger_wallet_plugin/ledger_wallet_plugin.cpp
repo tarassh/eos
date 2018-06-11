@@ -33,4 +33,8 @@ void ledger_wallet_plugin::plugin_shutdown() {
    // OK, that's enough magic
 }
 
+ledger_wallet_manager& ledger_wallet_plugin::get_wallet_manager() {
+    return *my;
+}
+
 }
