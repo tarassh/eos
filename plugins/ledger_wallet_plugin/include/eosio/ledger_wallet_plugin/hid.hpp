@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <string>
+#include <type_traits>
 #include <hidapi.h>
 
 using namespace std;
@@ -15,9 +16,17 @@ using namespace eosio::chain;
 
 namespace eosio {
 
+typedef vector<unsigned char> databuf_t;
+
+databuf_t hex_to_databuf(const std::string& hex);
+std::string databuf_to_hex(const databuf_t &buf);
+size_t pack_back_short_be(databuf_t &buffer, unsigned short value);
+size_t pack_back_byte_be(databuf_t &buffer, unsigned char value);
+
+size_t pack_back_buffer(databuf_t &buffer, const databuf_t &source, size_t from, size_t to);
+
 class hid {
 public:
-    typedef vector<unsigned char> databuf_t;
 
     hid(unsigned short vendor_id, unsigned short product_id, wchar_t *serial_number = 0);
     hid(const char *path);

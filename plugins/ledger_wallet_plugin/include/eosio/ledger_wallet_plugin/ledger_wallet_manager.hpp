@@ -115,11 +115,10 @@ private:
     hid *open_device();
     void close_device(hid *device);
 
-    hid::databuf_t hex_to_bytes(const std::string& hex);
-    hid::databuf_t exchange(hid *device, hid::databuf_t &apdu);
-    hid::databuf_t wait_first_response(hid *device, std::chrono::seconds timeout = std::chrono::seconds(20));
-    hid::databuf_t wrap_apdu_command(unsigned short channel, hid::databuf_t &command, unsigned int packet_size);
-    hid::databuf_t unwrap_apdu_response(unsigned short channel, hid::databuf_t &data, unsigned int packet_size);
+    databuf_t exchange(hid *device, databuf_t &apdu);
+    databuf_t wait_first_response(hid *device, std::chrono::seconds timeout = std::chrono::seconds(20));
+    databuf_t wrap_apdu_command(unsigned short channel, databuf_t &command, unsigned int packet_size);
+    databuf_t unwrap_apdu_response(unsigned short channel, databuf_t &data, unsigned int packet_size);
 };
 
 }

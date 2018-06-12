@@ -9,6 +9,53 @@ namespace eosio {
 
 #define READ_BUFF_MAXSIZE 2048
 
+constexpr char hexmap[] = {'0', '1', '2', '3', '4', '5', '6', '7',
+                           '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
+databuf_t hex_to_databuf(const std::string &hex) {
+    databuf_t bytes;
+
+    for (unsigned int i = 0; i < hex.length(); i += 2) {
+        std::string byte_string = hex.substr(i, 2);
+        auto byte = (unsigned char) strtol(byte_string.c_str(), nullptr, 16);
+        bytes.push_back(byte);
+    }
+
+    return bytes;
+}
+
+std::string databuf_to_hex(const databuf_t &buf) {
+    std::string s(buf.size() * 2, ' ');
+    for (int i = 0; i < buf.size(); ++i) {
+        s[2 * i]     = hexmap[(buf[i] & 0xF0) >> 4];
+        s[2 * i + 1] = hexmap[buf[i] & 0x0F];
+    }
+    return s;
+}
+
+size_t pack_back_buffer(databuf_t &buffer, const databuf_t &source, size_t from, size_t to) {
+    auto size = buffer.size();
+    buffer.insert(buffer.end(), source.cbegin() + from, source.cbegin() + to);
+    return buffer.size() - size;
+}
+
+size_t pack_back_short_be(databuf_t &buffer, unsigned short value) {
+    unsigned char byte = (value >> 8) & 0xFF;
+    buffer.push_back(byte);
+    byte = (unsigned char) (value & 0xFF);
+    buffer.push_back(byte);
+
+    return sizeof(value);
+}
+
+size_t pack_back_byte_be(databuf_t &buffer, unsigned char value) {
+    unsigned char byte = (unsigned char) (value & 0xFF);
+    buffer.push_back(byte);
+
+    return sizeof(value);
+}
+
+
 hid::hid(unsigned short vendor_id, unsigned short product_id, wchar_t *serial_number)
         : _vendor_id(vendor_id), _product_id(product_id) {
     _hid_handle = hid_open(vendor_id, product_id, serial_number);
@@ -40,7 +87,7 @@ void hid::set_non_blocking(int message) {
     }
 }
 
-int hid::write(const eosio::hid::databuf_t &message) {
+int hid::write(const databuf_t &message) {
     unsigned char *buf = new unsigned char[message.size()];
     unsigned char *p = buf;
     for (const auto &i : message) {
@@ -55,7 +102,7 @@ int hid::write(const eosio::hid::databuf_t &message) {
     return res; // return actual number of bytes written
 }
 
-hid::databuf_t hid::read(unsigned int size) {
+databuf_t hid::read(unsigned int size) {
     unsigned char *buf = new unsigned char[size];
     int len = hid_read(_hid_handle, buf, size);
     if (len < 0) {
@@ -68,7 +115,7 @@ hid::databuf_t hid::read(unsigned int size) {
     return data;
 }
 
-hid::databuf_t hid::read_timeout(int timeout) {
+databuf_t hid::read_timeout(int timeout) {
     unsigned char buff_read[READ_BUFF_MAXSIZE];
     int returned_length = hid_read_timeout(_hid_handle, buff_read, sizeof(buff_read), timeout);
 
@@ -79,7 +126,7 @@ hid::databuf_t hid::read_timeout(int timeout) {
     return databuf_t(buff_read, buff_read + returned_length);
 }
 
-hid::databuf_t hid::get_feature_report(unsigned char report_id) {
+databuf_t hid::get_feature_report(unsigned char report_id) {
     unsigned char buff_read[READ_BUFF_MAXSIZE];
     buff_read[0] = report_id;
 
@@ -92,7 +139,7 @@ hid::databuf_t hid::get_feature_report(unsigned char report_id) {
     return databuf_t(buff_read, buff_read + returned_length);
 }
 
-int hid::send_feature_report(const eosio::hid::databuf_t &message) {
+int hid::send_feature_report(const databuf_t &message) {
     unsigned char *buf = new unsigned char[message.size()];
     unsigned char *p = buf;
     for (const auto &i : message) {
