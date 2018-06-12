@@ -33,13 +33,13 @@ std::string databuf_to_hex(const databuf_t &buf) {
     return s;
 }
 
-size_t pack_back_buffer(databuf_t &buffer, const databuf_t &source, size_t from, size_t to) {
+size_t pack_buffer(databuf_t &buffer, const databuf_t &source, size_t from, size_t to) {
     auto size = buffer.size();
     buffer.insert(buffer.end(), source.cbegin() + from, source.cbegin() + to);
     return buffer.size() - size;
 }
 
-size_t pack_back_short_be(databuf_t &buffer, unsigned short value) {
+size_t pack_short_be(databuf_t &buffer, unsigned short value) {
     unsigned char byte = (value >> 8) & 0xFF;
     buffer.push_back(byte);
     byte = (unsigned char) (value & 0xFF);
@@ -48,11 +48,25 @@ size_t pack_back_short_be(databuf_t &buffer, unsigned short value) {
     return sizeof(value);
 }
 
-size_t pack_back_byte_be(databuf_t &buffer, unsigned char value) {
-    unsigned char byte = (unsigned char) (value & 0xFF);
+size_t pack_byte_be(databuf_t &buffer, unsigned char value) {
+    auto byte = (unsigned char) (value & 0xFF);
     buffer.push_back(byte);
 
     return sizeof(value);
+}
+
+unsigned short unpack_short_be(const databuf_t &buffer, size_t offset) {
+    unsigned short value = 0;
+    auto byte = (unsigned short)buffer[offset];
+    value |= (byte << 8) & 0xFF00;
+
+    byte = buffer[offset+1];
+    value |= byte & 0x00FF;
+    return value;
+}
+
+unsigned char unpack_byte_be(const databuf_t &buffer, size_t offset) {
+    return buffer[offset];
 }
 
 
@@ -87,12 +101,22 @@ void hid::set_non_blocking(int message) {
     }
 }
 
+
+
 int hid::write(const databuf_t &message) {
     unsigned char *buf = new unsigned char[message.size()];
+    memset(buf, 0, message.size());
     unsigned char *p = buf;
     for (const auto &i : message) {
         *p++ = i;
     }
+
+    std::stringstream ss;
+    for(int i = 0; i < message.size(); ++i)
+        ss << std::setw(2) << std::setfill('0') << std::hex << (int)buf[i];
+    std::string mystr = ss.str();
+    ilog( "===> ${c}", ("c",mystr));
+
     int res = hid_write(_hid_handle, buf, message.size());
     delete[] buf;
     if (res < 0) {
@@ -109,7 +133,12 @@ databuf_t hid::read(unsigned int size) {
         delete[] buf;
         // THROW
     }
-    auto data = databuf_t(buf, buf + len);
+
+    databuf_t data;
+    for (int i = 0; i < len; ++i) {
+        data.push_back(buf[i]);
+    }
+
     delete[] buf;
 
     return data;
