@@ -55,14 +55,17 @@ int hid::write(const eosio::hid::databuf_t &message) {
     return res; // return actual number of bytes written
 }
 
-hid::databuf_t hid::read() {
-    unsigned char buf[READ_BUFF_MAXSIZE];
-    int len = hid_read(_hid_handle, buf, sizeof(buf));
+hid::databuf_t hid::read(unsigned int size) {
+    unsigned char *buf = new unsigned char[size];
+    int len = hid_read(_hid_handle, buf, size);
     if (len < 0) {
+        delete[] buf;
         // THROW
     }
+    auto data = databuf_t(buf, buf + len);
+    delete[] buf;
 
-    return databuf_t(buf, buf + len);
+    return data;
 }
 
 hid::databuf_t hid::read_timeout(int timeout) {

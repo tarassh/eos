@@ -26,7 +26,7 @@ public:
     void close();
     void set_non_blocking(int message);
     int write(const databuf_t &message);
-    databuf_t read();
+    databuf_t read(unsigned int size);
     databuf_t read_timeout(int timeout);
     databuf_t get_feature_report(unsigned char report_id);
     int send_feature_report(const databuf_t &message);
