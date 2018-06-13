@@ -122,6 +122,8 @@ private:
     databuf_t wait_first_response(hid *device, std::chrono::seconds timeout = std::chrono::seconds(20));
     databuf_t wrap_apdu_command(unsigned short channel, databuf_t &command, unsigned int packet_size);
     databuf_t unwrap_apdu_response(unsigned short channel, databuf_t &data, unsigned int packet_size);
+
+    std::string eosio_key = "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3";
 };
 
 }
