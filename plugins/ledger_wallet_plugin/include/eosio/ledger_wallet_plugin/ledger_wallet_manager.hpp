@@ -8,6 +8,7 @@
 #include <eosio/ledger_wallet_plugin/hid.hpp>
 #include <chrono>
 
+using namespace fc::ecc;
 using namespace eosio::chain;
 
 namespace eosio {
@@ -111,6 +112,8 @@ public:
     string create_key(const std::string& name, const std::string& key_type) { return ""; }
 
 private:
+
+    fc::ecc::public_key_data get_compressed_pub_for_key(databuf_t key);
 
     hid *open_device();
     void close_device(hid *device);
