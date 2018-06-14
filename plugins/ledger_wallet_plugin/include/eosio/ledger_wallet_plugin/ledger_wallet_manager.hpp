@@ -113,6 +113,9 @@ public:
 
 private:
 
+    public_key_type get_public_key();
+    databuf_t sign_data(const databuf_t &data);
+
     fc::ecc::public_key_data get_compressed_pub_for_key(databuf_t key);
 
     hid *open_device();
