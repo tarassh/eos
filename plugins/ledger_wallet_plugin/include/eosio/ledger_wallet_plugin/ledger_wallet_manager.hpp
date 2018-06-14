@@ -117,6 +117,9 @@ private:
     databuf_t sign_data(const databuf_t &data);
 
     fc::ecc::public_key_data get_compressed_pub_for_key(databuf_t key);
+    signature_type get_compressed_signature(databuf_t sig);
+
+    databuf_t sig_parse(unsigned char *sig, int size);
 
     hid *open_device();
     void close_device(hid *device);
