@@ -119,13 +119,11 @@ private:
     fc::ecc::public_key_data get_compressed_pub_for_key(databuf_t key);
     signature_type get_compressed_signature(databuf_t sig);
 
-    databuf_t sig_parse(unsigned char *sig, int size);
+    std::unique_ptr<hid> open_device();
+    void close_device(std::unique_ptr<hid> &device);
 
-    hid *open_device();
-    void close_device(hid *device);
-
-    databuf_t exchange(hid *device, databuf_t &apdu);
-    databuf_t wait_first_response(hid *device, std::chrono::seconds timeout = std::chrono::seconds(20));
+    databuf_t exchange(std::unique_ptr<hid> &device, databuf_t &apdu);
+    databuf_t wait_first_response(std::unique_ptr<hid> &device, std::chrono::seconds timeout = std::chrono::seconds(20));
     databuf_t wrap_apdu_command(unsigned short channel, databuf_t &command, unsigned int packet_size);
     databuf_t unwrap_apdu_response(unsigned short channel, databuf_t &data, unsigned int packet_size);
 
