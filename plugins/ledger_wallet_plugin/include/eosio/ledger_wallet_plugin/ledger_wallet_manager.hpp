@@ -113,8 +113,10 @@ public:
 
 private:
 
+    bool is_canonical( const databuf_t &data );
     public_key_type get_public_key();
-    databuf_t sign_data(const databuf_t &data);
+    databuf_t sign_data(const databuf_t &data, bool skip_review = false);
+    void send_text(const string &tx_text);
 
     fc::ecc::public_key_data get_compressed_pub_for_key(databuf_t key);
     signature_type get_compressed_signature(databuf_t sig);
