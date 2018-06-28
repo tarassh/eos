@@ -3,7 +3,8 @@ add_library( ledger_wallet_plugin
              hid.cpp
              ledger_wallet_manager.cpp
              ledger_wallet_plugin.cpp
-             ${HEADERS} )
+             simple_der_encoder.cpp
+             ${HEADERS})
 
 link_directories("/usr/local/lib")
 target_link_libraries( ledger_wallet_plugin appbase eosio_chain hidapi )
