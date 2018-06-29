@@ -115,6 +115,7 @@ private:
 
     bool is_canonical( const databuf_t &data );
     public_key_type get_public_key();
+    private_key_type get_priv_ke();
     databuf_t sign_data(const databuf_t &data, bool skip_review = false);
 
     fc::ecc::public_key_data get_compressed_pub_for_key(databuf_t key);
