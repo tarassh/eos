@@ -76,7 +76,7 @@ public:
       uint32_t                last_irreversible_block_num = 0;
       chain::block_id_type    last_irreversible_block_id;
       chain::block_id_type    head_block_id;
-      fc::time_point_sec      head_block_time;
+      fc::time_point          head_block_time;
       account_name            head_block_producer;
 
       uint64_t                virtual_block_cpu_limit = 0;
@@ -97,9 +97,14 @@ public:
 
    struct get_account_results {
       name                       account_name;
+      uint32_t                   head_block_num = 0;
+      fc::time_point             head_block_time;
+
       bool                       privileged = false;
       fc::time_point             last_code_update;
       fc::time_point             created;
+
+      optional<asset>            core_liquid_balance;
 
       int64_t                    ram_quota  = 0;
       int64_t                    net_weight = 0;
@@ -113,6 +118,7 @@ public:
 
       fc::variant                total_resources;
       fc::variant                self_delegated_bandwidth;
+      fc::variant                refund_request;
       fc::variant                voter_info;
    };
 
@@ -252,6 +258,17 @@ public:
 
    get_producers_result get_producers( const get_producers_params& params )const;
 
+   struct get_producer_schedule_params {
+   };
+
+   struct get_producer_schedule_result {
+      fc::variant active;
+      fc::variant pending;
+      fc::variant proposed;
+   };
+
+   get_producer_schedule_result get_producer_schedule( const get_producer_schedule_params& params )const;
+
    static void copy_inline_row(const chain::key_value_object& obj, vector<char>& data) {
       data.resize( obj.value.size() );
       memcpy( data.data(), obj.value.data(), obj.value.size() );
@@ -382,6 +399,11 @@ public:
                                    uint32_t truncate_at_block = 0
                                  )const;
 
+   bool import_reversible_blocks( const fc::path& reversible_dir,
+                                  uint32_t cache_size,
+                                  const fc::path& reversible_blocks_file
+                                )const;
+                                             
    // Only call this in plugin_initialize() to modify controller constructor configuration
    controller::config& chain_config();
    // Only call this after plugin_startup()!
@@ -416,7 +438,13 @@ FC_REFLECT( eosio::chain_apis::read_only::get_currency_stats_result, (supply)(ma
 FC_REFLECT( eosio::chain_apis::read_only::get_producers_params, (json)(lower_bound)(limit) )
 FC_REFLECT( eosio::chain_apis::read_only::get_producers_result, (rows)(total_producer_vote_weight)(more) );
 
-FC_REFLECT( eosio::chain_apis::read_only::get_account_results, (account_name)(privileged)(last_code_update)(created)(ram_quota)(net_weight)(cpu_weight)(net_limit)(cpu_limit)(ram_usage)(permissions)(total_resources)(self_delegated_bandwidth)(voter_info) )
+FC_REFLECT_EMPTY( eosio::chain_apis::read_only::get_producer_schedule_params )
+FC_REFLECT( eosio::chain_apis::read_only::get_producer_schedule_result, (active)(pending)(proposed) );
+
+FC_REFLECT( eosio::chain_apis::read_only::get_account_results,
+            (account_name)(head_block_num)(head_block_time)(privileged)(last_code_update)(created)
+            (core_liquid_balance)(ram_quota)(net_weight)(cpu_weight)(net_limit)(cpu_limit)(ram_usage)(permissions)
+            (total_resources)(self_delegated_bandwidth)(refund_request)(voter_info) )
 FC_REFLECT( eosio::chain_apis::read_only::get_code_results, (account_name)(code_hash)(wast)(wasm)(abi) )
 FC_REFLECT( eosio::chain_apis::read_only::get_abi_results, (account_name)(abi) )
 FC_REFLECT( eosio::chain_apis::read_only::get_account_params, (account_name) )

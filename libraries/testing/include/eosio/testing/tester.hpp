@@ -55,7 +55,9 @@ namespace boost { namespace test_tools { namespace tt_detail {
 } } }
 
 namespace eosio { namespace testing {
-
+   std::vector<uint8_t> read_wasm( const char* fn );
+   std::vector<char>    read_abi( const char* fn );
+   std::string          read_wast( const char* fn );
    using namespace eosio::chain;
 
    fc::variant_object filter_fields(const fc::variant_object& filter, const fc::variant_object& value);
@@ -78,7 +80,7 @@ namespace eosio { namespace testing {
 
          virtual ~base_tester() {};
 
-         void              init(bool push_genesis = true);
+         void              init(bool push_genesis = true, db_read_mode read_mode = db_read_mode::SPECULATIVE);
          void              init(controller::config config);
 
          void              close();
@@ -121,9 +123,9 @@ namespace eosio { namespace testing {
          action get_action( account_name code, action_name acttype, vector<permission_level> auths,
                                          const variant_object& data )const;
 
-         void                 set_transaction_headers(signed_transaction& trx,
-                                                      uint32_t expiration = DEFAULT_EXPIRATION_DELTA,
-                                                      uint32_t delay_sec = 0)const;
+         void  set_transaction_headers( transaction& trx,
+                                        uint32_t expiration = DEFAULT_EXPIRATION_DELTA,
+                                        uint32_t delay_sec = 0 )const;
 
          vector<transaction_trace_ptr>  create_accounts( vector<account_name> names,
                                                          bool multisig = false,
@@ -199,7 +201,7 @@ namespace eosio { namespace testing {
                                                              const symbol&       asset_symbol,
                                                              const account_name& account ) const;
 
-         vector<char> get_row_by_account( uint64_t code, uint64_t scope, uint64_t table, const account_name& act );
+         vector<char> get_row_by_account( uint64_t code, uint64_t scope, uint64_t table, const account_name& act ) const;
 
          map<account_name, block_id_type> get_last_produced_block_map()const { return last_produced_block; };
          void set_last_produced_block_map( const map<account_name, block_id_type>& lpb ) { last_produced_block = lpb; }
@@ -279,11 +281,8 @@ namespace eosio { namespace testing {
 
    class tester : public base_tester {
    public:
-      tester(bool push_genesis) {
-         init(push_genesis);
-      }
-      tester() {
-         init(true);
+      tester(bool push_genesis = true, db_read_mode read_mode = db_read_mode::SPECULATIVE ) {
+         init(push_genesis, read_mode);
       }
 
       tester(controller::config config) {
